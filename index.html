@@ -1,0 +1,394 @@
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow"><title>防守工具日誌</title>
+<style>
+:root{--bg:#f6f5f2;--card:#fff;--ink:#1f2328;--sub:#6b6f76;--line:#e4e1da;
+--tool:#2f6fd6;--tool-bg:#e8f0fc;--game:#c27a12;--game-bg:#fbf0dc}
+@media (prefers-color-scheme:dark){:root{--bg:#16181c;--card:#1f2228;--ink:#e8e9eb;--sub:#9a9ea6;
+--line:#2e323a;--tool:#7fb0ff;--tool-bg:#1d2a40;--game:#f0b45a;--game-bg:#352914}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+font:16px/1.75 -apple-system,"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;
+-webkit-text-size-adjust:100%}
+.vh{position:absolute;opacity:0;pointer-events:none;width:1px;height:1px}
+.wrap{max-width:720px;margin:0 auto;padding:28px 16px 80px}
+h1{font-size:24px;margin:0 0 12px;letter-spacing:.02em}
+.ctl{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:4px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;background:var(--card)}
+.ctl label{font-size:14px;line-height:1;padding:9px 13px;color:var(--sub);cursor:pointer;user-select:none;-webkit-user-select:none}
+.ctl>label{border:1px solid var(--line);border-radius:999px;background:var(--card)}
+#vFull:checked~.wrap [for=vFull],#vTl:checked~.wrap [for=vTl],#oNew:checked~.wrap [for=oNew],
+#oOld:checked~.wrap [for=oOld],#fGame:checked~.wrap [for=fGame]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.rev{display:flex;flex-direction:column}
+#oOld:checked~.wrap .rev{flex-direction:column-reverse}
+#vTl:checked~.wrap .full,#vFull:checked~.wrap .tl{display:none}
+#fGame:checked~.wrap .tool,#fGame:checked~.wrap [data-k]:not([data-k~=game]){display:none}
+.mo h2{font-size:15px;color:var(--sub);font-weight:600;margin:32px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+.day{display:grid;grid-template-columns:76px 1fr;gap:12px;padding:12px 0}
+.day .dt{font-weight:700;font-size:17px;padding-top:12px;white-space:nowrap}
+.day .dt span{display:block;font-size:13px;font-weight:400;color:var(--sub);line-height:1.2}
+.es{display:flex;flex-direction:column;gap:10px;min-width:0}
+.e{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--tool);border-radius:10px;padding:12px 16px;scroll-margin-top:16px}
+.e.game{border-left-color:var(--game)}
+.e:target{border-color:var(--tool);border-left-color:var(--tool);box-shadow:0 0 0 2px var(--tool-bg)}
+.e.game:target{border-color:var(--game);box-shadow:0 0 0 2px var(--game-bg)}
+.e h3{margin:0 0 4px;font-size:17px;line-height:1.5}
+.tag{display:inline-block;font-size:12px;font-weight:600;line-height:1;padding:4px 7px;border-radius:5px;
+margin-right:8px;vertical-align:2px;color:var(--tool);background:var(--tool-bg)}
+.game .tag{color:var(--game);background:var(--game-bg)}
+.e p{margin:6px 0 0}
+.e ul{margin:6px 0 0;padding-left:1.2em}
+.e li{margin:2px 0}
+strong{font-weight:700}
+.td{display:grid;grid-template-columns:48px 1fr;gap:12px}
+.td .dt{font-size:14px;font-weight:600;color:var(--sub);text-align:right;padding-top:5px;white-space:nowrap}
+.tis{border-left:2px solid var(--line);padding:3px 0;min-width:0}
+.ti{display:block;position:relative;padding:5px 0 5px 16px;color:var(--ink);text-decoration:none;font-size:15px;line-height:1.55}
+.ti::before{content:"";position:absolute;left:-7px;top:12px;width:12px;height:12px;border-radius:50%;
+background:var(--tool);box-shadow:0 0 0 3px var(--bg)}
+.ti.game::before{background:var(--game)}
+@media (hover:hover){.ti:hover{color:var(--tool)}.ti.game:hover{color:var(--game)}}
+@media (min-width:900px){.wrap{zoom:1.2}}
+@media (min-width:1400px){.wrap{zoom:1.35}}
+@media (max-width:560px){.day{grid-template-columns:1fr;gap:6px}.day .dt{padding-top:0}.day .dt span{display:inline;font-size:14px}
+.td{grid-template-columns:40px 1fr;gap:10px}}
+</style></head>
+<body>
+<input class="vh" type="radio" name="v" id="vFull" checked><input class="vh" type="radio" name="v" id="vTl">
+<input class="vh" type="radio" name="o" id="oNew" checked><input class="vh" type="radio" name="o" id="oOld">
+<input class="vh" type="checkbox" id="fGame">
+<div class="wrap">
+<h1>防守工具日誌</h1>
+<div class="ctl">
+<span class="seg"><label for="vFull">完整</label><label for="vTl">時間軸</label></span>
+<span class="seg"><label for="oNew">最新</label><label for="oOld">最舊</label></span>
+<label for="fGame">只看遊戲</label>
+</div>
+<div class="full rev">
+<section class="mo" data-k="game tool"><h2>2026 年 10 月</h2><div class="rev">
+<section class="day" data-k="tool"><div class="dt">10/3<span>（六）</span></div><div class="es">
+<article class="e tool" id="e40"><h3><span class="tag">工具</span>衝盃統計全組版</h3>
+<p>把朋友那份手抄的衝盃統計，用全組 28 個號重跑：2309 場有名次的防守，檢驗配對、被三星率、控分這幾個假說。做了給群組的五張圖卡，和一份 PDF「9月衝盃統計報告」。朋友看完第一版給了意見，第二版要改 6 件，10/5 一點後重跑時一起做，順便驗證「換季前三天被三星率比較低」這個預測。</p>
+</article>
+<article class="e tool" id="e41"><h3><span class="tag">工具</span>筆記瘦身：CLAUDE.md 40KB → 29KB</h3>
+<p>擔心筆記太多導致用量過快。查出三個原因：CLAUDE.md 每個對話每一輪都會帶著；筆記是整份讀進對話、讀了就一直留著（自動化.md 一份就 94KB）；對話本身越拉越長。</p>
+<p>第一步（只求不掉工作品質）：</p>
+<ul><li>「踩過的坑」37 條裡，18 條是動畫、特效、iOS 手機的專門坑，搬到 `筆記/踩坑.md`；其餘 18 條每次改程式都可能碰到，留著</li><li>「目前進行中」整段搬到 `筆記/進行中.md`，CLAUDE.md 只留 6 行行程和指路</li><li>加了「怎麼讀筆記」規矩：不整份打開，先搜關鍵字、只讀那一段；改任何東西之前先搜一次筆記和日誌，看有沒有被否決過、踩過坑；搜不到要換個說法再搜</li><li>搬完用程式比對，舊 CLAUDE.md 的每一行都找得到</li></ul>
+<p>原本預計降到 20KB，實際只到 29KB，因為寧可多留也不誤搬。下一步是把最肥的筆記（自動化.md、賽季.md）拆成「現況」和「歷史」，要先做一次「考試」確認拆完不會答錯才放行。</p>
+</article>
+<article class="e tool" id="e42"><h3><span class="tag">工具</span>筆記過肥自動提醒</h3>
+<p>他提議：筆記太肥時要有一個固定的觸發，道理跟「對話超過 30 萬就換新對話」一樣。</p>
+<p>做了 `check-notes.sh`，每次開新對話自動跑（寫在 `.claude/settings.json` 的開場動作裡），沒超標完全不出聲，超標才在對話開頭跳出提醒，由我用白話告訴他是哪一份太肥、問他要不要瘦身。門檻：CLAUDE.md 超過 32KB 或 250 行、一般筆記超過 40KB。自動化、賽季、統計頁、主工具四份現在就已經超過 40KB，所以先設成「不准再長」（上限是現在的大小再多一點），拆完再拿掉。</p>
+</article>
+</div></section>
+<section class="day" data-k="tool"><div class="dt">10/2<span>（五）</span></div><div class="es">
+<article class="e tool" id="e37"><h3><span class="tag">工具</span>賽季卡改版＋ETC 全組回顧</h3>
+<p>賽季卡大改版，每個人配一隻吉祥物。新增 ETC 全組回顧：海報、漸層圓環、霧面獎狀、通緝令。通緝令上的印章改了好幾版，最後是砸下去會壓扁彈回、震動、噴墨水的暴力版。這一季取名「2026/9月WWE賽季」。全組回顧只在換季後才出現，第一次打開統計頁會一層一層打開。</p>
+</article>
+<article class="e tool" id="e38"><h3><span class="tag">工具</span>換季準備</h3>
+<p>模擬換季的三種情況，都不會弄丟資料。換季第一週，賽季卡直接顯示上一季；一台裝置有好幾個帳號的，一張一張跳，按「下一張」看下一個帳號。這些要在 10/5 下午一點前部署。</p>
+</article>
+<article class="e tool" id="e39"><h3><span class="tag">工具</span>出事：背景測試吃掉用量</h3>
+<p>一個留在背景的測試卡了好幾個小時，結束時把一個很長的舊對話叫醒、整段重讀，人還沒起床就吃掉大約 15% 的用量。之後定了省用量的規矩：對話超過 30 萬就換新的、排程改用比較便宜的模型、排程跑完不通知舊對話、背景測試一定要有時間上限。</p>
+</article>
+</div></section>
+<section class="day" data-k="game tool"><div class="dt">10/1<span>（四）</span></div><div class="es">
+<article class="e tool" id="e34"><h3><span class="tag">工具</span>先填明天的陣、紅字提醒</h3>
+<p>填寫頁可以先填明天的陣；流派沒選會出現紅字；打開有紅框的那天，會直接停在紅框那一格。</p>
+</article>
+<article class="e game" id="e35"><h3><span class="tag">遊戲</span>火球廢女巫併進火球阿婆</h3>
+<p>「火球廢女巫」是 9/5～9/13 用過的名字，實際只有 3 場（存在好幾台裝置上）。併進「火球阿婆」之後，流派是 12 個。全服資料新出現的「治療師＋投石手」決定忽略。</p>
+</article>
+<article class="e tool" id="e36"><h3><span class="tag">工具</span>更正：「只知道掉幾盃」不一定是自動防守</h3>
+<p>ClashKing 對「自動防守」和「漏抓的真人防守」都只記一個掉盃數字。Claude 一度說 9/30 那 6 格全是自動防守、建議改標，結果去遊戲裡查：5 格是自動防守，某位朋友第 8 場是漏抓的真人防守。如果照原本的建議改，真的漏掉的場就會被藏起來。</p>
+<p>現在 Mac mini 裝了一個暫時的觀察程式，看漏抓的場是不是一點前就會出現，確認了才改規則。</p>
+</article>
+</div></section>
+</div></section>
+<section class="mo" data-k="game tool"><h2>2026 年 9 月</h2><div class="rev">
+<section class="day" data-k="tool"><div class="dt">9/30<span>（三）</span></div><div class="es">
+<article class="e tool" id="e31"><h3><span class="tag">工具</span>文字換成兵種頭像</h3>
+<p>八格、戰報卡、統計頁的流派，都從文字換成兵種頭像，也加上 Supercell 粉絲內容的聲明。「其他」流派的補充寫了雷龍、大金龍、積木的，也換成那隻的頭像。</p>
+</article>
+<article class="e tool" id="e32"><h3><span class="tag">工具</span>取的名字就照用</h3>
+<p>新加的頭像圖檔取名「積木」，Claude 自己認成德魯伊，把檔名和說明都改叫德魯伊。從這天起的規矩：<strong>取的名字就照用，不要自己改成遊戲裡的官方名。</strong> 圖檔、流派、補充、按鈕上的字都一樣。</p>
+</article>
+<article class="e tool" id="e33"><h3><span class="tag">工具</span>兩個「不做」</h3>
+<ul><li><strong>漏抓的場不當下標紅</strong>：算過 9/15–9/28 八場都手填的 321 個人日，84% 戰報全有、16% 漏一場但知道掉幾盃。遊戲裡的防守紀錄隔天還看得到，等那一輪結束再標紅就夠了</li><li><strong>不拿「打了幾秒」評估陣</strong>：只要能三星，快慢不重要。那是只看數據、沒實際玩遊戲才會有的偏誤</li></ul>
+</article>
+</div></section>
+<section class="day" data-k="tool"><div class="dt">9/29<span>（二）</span></div><div class="es">
+<article class="e tool" id="e30"><h3><span class="tag">工具</span>自動填寫開放全組</h3>
+<ul><li>自動填寫開放給全組 27 個帳號</li><li>每天中午一點結算後，背景程式自動發布那一輪的使用率</li><li>ClashKing 沒抓到的場標紅框，三天沒人補才填估計值</li><li>流派規則第二版：看大守護者有沒有帶火球裝備、加上鉛筆阿婆</li></ul>
+</article>
+</div></section>
+<section class="day" data-k="game tool"><div class="dt">9/28<span>（一）</span></div><div class="es">
+<article class="e game" id="e28"><h3><span class="tag">遊戲</span>超球併進火球馬雲</h3>
+<p>流派「超球」併進「火球馬雲」，舊紀錄照存舊名，讀的時候換名字。同一天下午訂的自動填寫規則（只帶火箭氣球算「其他」）跟這個決定打架，是全組模擬才抓到的。之後整理了一張「改流派時要一起改的十幾個地方」的清單。</p>
+</article>
+<article class="e tool" id="e29"><h3><span class="tag">工具</span>大轉折：防守紀錄開始自動化</h3>
+<p>找到 ClashKing 的公開資料（免費、不用申請），裡面有每一場防守的對手軍隊。先拿一位朋友 20 天的戰報比對，再比另外三位的，確認抓得準。晚上自動填寫第一批 6 個帳號上線：八格不用再全部手填，星數、破壞率、流派工具會自己帶出來。</p>
+<p>同一天也開始自動抓全服資料（Ranked Warden），統計頁多了「被三星率 vs 各流派勝率」和全服三星率的趨勢。</p>
+</article>
+</div></section>
+<section class="day" data-k="game"><div class="dt">9/27<span>（日）</span></div><div class="es">
+<article class="e game" id="e27"><h3><span class="tag">遊戲</span>陣型越來越分散</h3>
+<p>Claude 提議把「最近沒人用」的陣在對照表裡收起來，被否決了，理由是擔心陣型多樣性會下降。資料證明這個擔心是對的：這一季「最多人用的那座」佔比，從上一季的 35% 掉到第三週的 23%，大家用的陣越來越分散。而且一座陣空了兩週，還有大約一成會被撿回來 —— 卡比2 空了 16 天，9/22 被第一次用的人撿起來，變成當時還在用的陣裡被三星最低的（31%）。</p>
+<p>同一天還否決了另一個：名次區間照「當天的名次」算。做成預覽一看很亂，勾 1–500 會冒出現在 #1212、只是以前有幾天進過前 500 的人。</p>
+</article>
+</div></section>
+<section class="day" data-k="tool"><div class="dt">9/26<span>（六）</span></div><div class="es">
+<article class="e tool" id="e26"><h3><span class="tag">工具</span>援軍欄位</h3>
+<p>填寫頁和統計頁都加了援軍；拿掉「當日評價」；流派明細可以收起來。全新的裝置沒帶群組代碼時，預設進 ETC。</p>
+</article>
+</div></section>
+<section class="day" data-k="tool"><div class="dt">9/24<span>（四）</span></div><div class="es">
+<article class="e tool" id="e25"><h3><span class="tag">工具</span>表頭挑了四輪，數字對準正中</h3>
+<p>所有人的陣的表頭換成星星和光條的符號，前後挑了四輪。從這次開始，要挑樣式時都做一張「比較頁」：同一塊複製好幾份、各套一種樣式，一次滑完就能選。</p>
+<p>「13%」整段置中時，程式量起來完全對齊，但 % 佔了右邊一截，數字本身其實偏左 9px。是肉眼看出來的，程式量了兩次都說沒問題。</p>
+</article>
+</div></section>
+<section class="day" data-k="tool"><div class="dt">9/23<span>（三）</span></div><div class="es">
+<article class="e tool" id="e23"><h3><span class="tag">工具</span>一天 21 個還原點：所有人的陣大改版</h3>
+<ul><li>帳號篩選改版：同一個人的帳號排在一起，做成膠囊</li><li>「所有人的陣」合起來看，改成「陣 × 流派」對照表；分開看改成換陣紀錄（有名次、時間線）</li><li>統計頁加「陣名合併」管理區：自己按合併／不是、指定要顯示的名字，存在雲端。順手加了幾條規則：簡體自動轉繁體、同一個連結就是同一座、「低馬」就是 Dima、「蜜汁」就是 Miz</li></ul>
+</article>
+<article class="e tool" id="e24"><h3><span class="tag">工具</span>出事：取回資料會搶走別人的帳號</h3>
+<p>「取回資料」做出來的副本，會把別人的帳號搶走。本機測試沒抓到，是上線之後才發現的。從此多了一條規矩：<strong>用雲端真實資料的功能，部署後要在線上再驗一次。</strong></p>
+</article>
+</div></section>
+<section class="day" data-k="game tool"><div class="dt">9/22<span>（二）</span></div><div class="es">
+<article class="e game" id="e21"><h3><span class="tag">遊戲</span>鉛筆削弱實裝</h3>
+<p>9/16 公告的削弱正式生效。統計頁趨勢圖第一次加上事件標記（9/16 公告、9/22 實裝），看曲線的時候知道那兩天發生了什麼。</p>
+</article>
+<article class="e tool" id="e22"><h3><span class="tag">工具</span>排序平手規則</h3>
+<p>統計頁的資料是照「誰最近上傳」的順序回來的，平手的陣每次重整都排得不一樣，前 20 座每次都是不同的 20 座。補上第二、第三個比較的依據之後，用「把資料打亂 30 次，每一區的結果必須只有一種」來驗。填寫頁也加了「已儲存 · 已上傳」那一行。</p>
+</article>
+</div></section>
+<section class="day" data-k="tool"><div class="dt">9/21<span>（一）</span></div><div class="es">
+<article class="e tool" id="e20"><h3><span class="tag">工具</span>兩條版面規矩</h3>
+<p>這天定下兩條之後一直照著走的規矩：</p>
+<ul><li><strong>畫面上不要一直有備註、說明句。</strong> 真的要講就一句、只在需要時出現、事情過了就消失</li><li><strong>快報一條一句、只有標題。</strong> 不要每條帶一段解釋，也不要結尾語</li></ul>
+<p>另外查了短網址（reurl），決定不做：短網址五個月沒人點會被收掉，舊陣型連結會變成壞的，手機上多一層轉址也不一定會直接跳進遊戲。換來的只是貼群組時短一點。</p>
+</article>
+</div></section>
+<section class="day" data-k="tool"><div class="dt">9/19<span>（六）</span></div><div class="es">
+<article class="e tool" id="e19"><h3><span class="tag">工具</span>賽季卡誕生</h3>
+<p>每個人一張自己這一季的成績卡，換季那天跳一次，之後在資料頁、統計頁都能再叫出來。四週用長條呈現，顏色照工具本身的紅黃綠。同一天統計頁的陣型清單改成預設只列 20 座，也拿掉兩句備註。</p>
+</article>
+</div></section>
+<section class="day" data-k="game"><div class="dt">9/16<span>（三）</span></div><div class="es">
+<article class="e game" id="e18"><h3><span class="tag">遊戲</span>官方公告鉛筆削弱</h3>
+<p>血 −4%、傷害 −4%、移動速度 18 → 16，當時還沒實裝。決定不改程式、不設分界日，理由跟 8/31 那次一樣。</p>
+</article>
+</div></section>
+<section class="day" data-k="game tool"><div class="dt">9/14<span>（一）</span></div><div class="es">
+<article class="e game" id="e16"><h3><span class="tag">遊戲</span>全組集中到 bb17</h3>
+<p>第一週盤點發現，大家的陣集中到 bb17：上一季 28 天只有 5 個人用、111 場；這一季才 7 天就有 13 個人用、290 場。這是工具第一次有「站得住」的樣本，可以認真比一座陣到底擋不擋得住。</p>
+</article>
+<article class="e tool" id="e17"><h3><span class="tag">工具</span>八場填完自動帶總計、陣名開始合併</h3>
+<ul><li>八場填完自動帶入防守總計</li><li>陣卡可以直接複製連結</li><li>「BB17皮卡版」「bb17皮卡改」「皮卡又改BB17」合併成同一座陣 —— 陣名合併從這裡開始</li></ul>
+</article>
+</div></section>
+<section class="day" data-k="tool"><div class="dt">9/11<span>（五）</span></div><div class="es">
+<article class="e tool" id="e15"><h3><span class="tag">工具</span>只上傳真的變過的帳號</h3>
+<p>一台裝置有好幾個帳號時，以前每次都整包上傳；改成只有內容真的變了的帳號才送，省流量，也少一點出錯的機會。</p>
+</article>
+</div></section>
+<section class="day" data-k="tool"><div class="dt">9/10<span>（四）</span></div><div class="es">
+<article class="e tool" id="e14"><h3><span class="tag">工具</span>全服使用率改成多數決</h3>
+<p>趨勢圖上的全服使用率，以前看的是「誰剛好最後打開工具」那台裝置記的數字，改成大家記的數字取多數決。</p>
+</article>
+</div></section>
+<section class="day" data-k="tool"><div class="dt">9/9<span>（三）</span></div><div class="es">
+<article class="e tool" id="e13"><h3><span class="tag">工具</span>顏色照群組的真實資料畫</h3>
+<ul><li>被三星率的紅黃綠分界，改照群組實際的落點畫，不是隨便訂一個數字</li><li>趨勢圖的上下範圍收緊，曲線不再被壓成一條平線</li><li>9/10 的快報：五條加放假公告。快報是跳給所有人看的，內容要先想過一次「別組的人看到會怎樣」</li></ul>
+</article>
+</div></section>
+<section class="day" data-k="tool"><div class="dt">9/8<span>（二）</span></div><div class="es">
+<article class="e tool" id="e12"><h3><span class="tag">工具</span>所有人的陣</h3>
+<p>統計頁可以看全組的陣：同一座陣跨玩家合起來算，也能照流派篩選。手機上的帳號列改成固定一行、左右滑，帳號名太長不會再撐爆版面。</p>
+</article>
+</div></section>
+<section class="day" data-k="game tool"><div class="dt">9/7<span>（一）</span></div><div class="es">
+<article class="e game" id="e10"><h3><span class="tag">遊戲</span>第一次換季</h3>
+<p>工具上線後第一次換季，新一季是 9/7 到 10/4。原本完全不知道換季後名次會變成怎樣，當天下午四點雲端已經有三個人填了新賽季名次：581、917、1758，三到四位數，沒有變成六位數，所以名次區間的篩選照樣能用。</p>
+<p>順便發現：8/28 到 9/6 這十天裡，有 13 個人漏填的都是同一天 —— 9/6，上一季最後一天。是大家一起放掉，不是各自忘記。</p>
+</article>
+<article class="e tool" id="e11"><h3><span class="tag">工具</span>最後填寫清單：一個下午改了八次</h3>
+<p>統計頁加了「最後填寫」清單，看誰多久沒填。從下午五點改到晚上八點：加日期、加「最後打開工具」、加日期格子條、拿掉「漏 N 天」（格子條已經看得出來）、拿掉說明文字、最後定成預設收起。</p>
+</article>
+</div></section>
+<section class="day" data-k="tool"><div class="dt">9/6<span>（日）</span></div><div class="es">
+<article class="e tool" id="e9"><h3><span class="tag">工具</span>換季前整備，群組正式叫 ETC</h3>
+<p>第一次換季前一天，把統計頁整理好：賽季分開算、畫上賽季線、流派統計和觀察合成一區。群組在畫面上改叫 <strong>ETC</strong>。「我們遇到的」改名叫「實際被進攻率」。</p>
+<p>還定了一件事：統計頁一律不算「還在進行中的那一輪」，而且判斷方式是看大家填完了沒，不是看時鐘。</p>
+</article>
+</div></section>
+<section class="day" data-k="tool"><div class="dt">9/5<span>（六）</span></div><div class="es">
+<article class="e tool" id="e8"><h3><span class="tag">工具</span>日等級特效：敲破玻璃、放火箭</h3>
+<p>一天八場一場都沒守住，畫面會敲破玻璃；一星守住三場，會放火箭。統計頁也加了週結報。</p>
+</article>
+</div></section>
+<section class="day" data-k="tool"><div class="dt">9/4<span>（五）</span></div><div class="es">
+<article class="e tool" id="e7"><h3><span class="tag">工具</span>手機填寫大改：特效、數字鍵、取回資料</h3>
+<p>這天存了 14 個還原點，幾乎都在處理「手機上填起來順不順」：</p>
+<ul><li><strong>防守回饋</strong>：填完一場跳出結果面板，照遊戲的星星邏輯，被三星也會有反應</li><li><strong>從雲端取回資料</strong>：換手機、瀏覽器被清空，也能把紀錄接回來</li><li><strong>畫面上的數字鍵</strong>：填破壞率不再叫出手機鍵盤</li><li><strong>翻頁動畫</strong>：換下一場時卡片滑進來、「第 N 場」放大變藍再縮回。滑入時間從 0.5 秒試到 1 秒，最後定在 1.5 秒</li></ul>
+<p>踩到的坑：日期橫條為了「捲到看得見的位置」用了一個寫法，結果每按一個數字整頁就往上跳，藏了很久才抓到。</p>
+</article>
+</div></section>
+<section class="day" data-k="tool"><div class="dt">9/3<span>（四）</span></div><div class="es">
+<article class="e tool" id="e6"><h3><span class="tag">工具</span>多群組，還有「修 bug 不跳快報」</h3>
+<ul><li>一個人的紀錄可以同時算進好幾組；群組改成每個帳號自己決定，不再整台一起帶走</li><li>一口氣修掉三個跟群組有關的 bug：快報會擋掉群組邀請連結、清空資料會弄丟群組、發布流派可能毀掉別組資料</li><li>統計頁的自訂時間範圍改成單月月曆</li></ul>
+<p>也是這天定下的規矩：<strong>修 bug 不跳快報</strong>。使用者感覺不到的東西不用公告，講太多次大家會麻痺。只有「畫面多了新東西」或「既有的數字會變」才值得跳一次。</p>
+</article>
+</div></section>
+<section class="day" data-k="tool"><div class="dt">9/2<span>（三）</span></div><div class="es">
+<article class="e tool" id="e4"><h3><span class="tag">工具</span>第一個還原點</h3>
+<p>凌晨把整個工具存成第一個還原點。從這天開始，每改一次就存一個，到 10/3 一共 256 個。同一晚做了三件打底的事：</p>
+<ul><li>陣型圖片不再上傳雲端。統計頁每次打開都要抓所有人的資料，圖片放上去流量會爆</li><li>同一個人用好幾台裝置填的資料，改成一天一天合併，不再整台丟掉</li><li>加了「群組代碼」，不同群組的資料分開統計。當時這邊 20 個人，改完沒有任何影響</li></ul>
+</article>
+<article class="e tool" id="e5"><h3><span class="tag">工具</span>第一個外部群組</h3>
+<p>同一天開了第一個別組的群組，工具開始不只是我們自己在用。</p>
+</article>
+</div></section>
+</div></section>
+<section class="mo" data-k="game tool"><h2>2026 年 8 月</h2><div class="rev">
+<section class="day" data-k="game"><div class="dt">8/31<span>（一）</span></div><div class="es">
+<article class="e game" id="e3"><h3><span class="tag">遊戲</span>改版：移除 Bug煎餅</h3>
+<p>晚上 7:17 遊戲改版：修了一些 bug、加強廢墟女巫、移除 Bug煎餅（雙龍的一種打法）。工具裡原本把 Bug煎餅當成雙龍底下的一種，改版後就沒人選得到了，但舊紀錄照樣留著。</p>
+<p>9/7 回頭算過一次影響：改版前 5 天 623 場、被三星 47.7%；改版後 6 天 787 場、被三星 56.7%。差了 9 個百分點，看起來像是改版造成的，但同一段時間大家名次一直往上爬，對手變強更能解釋這個差距。真正消失的只有 Bug煎餅（43 場變 0 場，佔 3%）。為了排掉 3% 的資料砍掉 44% 的樣本不划算，所以決定<strong>不設資料分界日</strong>。</p>
+</article>
+</div></section>
+<section class="day" data-k="tool"><div class="dt">8/27<span>（四）</span></div><div class="es">
+<article class="e tool" id="e2"><h3><span class="tag">工具</span>工具上線</h3>
+<p>第一天就有人開始填。這時候賽季已經過了一半多，28 天只趕上最後 10 天。8/27 到 8/31 這五天累積了 623 場防守。</p>
+<p>也因為這樣，後來做賽季卡時決定這一季不做：只會是一張「記了 10 / 28 天」的殘卡，不是它最好的樣子。</p>
+</article>
+</div></section>
+<section class="day" data-k="game"><div class="dt">8/10<span>（一）</span></div><div class="es">
+<article class="e game" id="e1"><h3><span class="tag">遊戲</span>賽季開始（8/10–9/6）</h3>
+<p>傳奇聯賽的賽季固定 28 天、週一換季。這一季從 8/10 開始，那時候還沒有這個工具，大家的防守都沒留下紀錄。</p>
+</article>
+</div></section>
+</div></section>
+</div>
+<div class="tl rev">
+<section class="mo" data-k="game tool"><h2>2026 年 10 月</h2><div class="rev">
+<div class="td" data-k="tool"><div class="dt">10/3</div><div class="tis">
+<a class="ti tool" href="#e40">衝盃統計全組版</a>
+<a class="ti tool" href="#e41">筆記瘦身：CLAUDE.md 40KB → 29KB</a>
+<a class="ti tool" href="#e42">筆記過肥自動提醒</a>
+</div></div>
+<div class="td" data-k="tool"><div class="dt">10/2</div><div class="tis">
+<a class="ti tool" href="#e37">賽季卡改版＋ETC 全組回顧</a>
+<a class="ti tool" href="#e38">換季準備</a>
+<a class="ti tool" href="#e39">出事：背景測試吃掉用量</a>
+</div></div>
+<div class="td" data-k="game tool"><div class="dt">10/1</div><div class="tis">
+<a class="ti tool" href="#e34">先填明天的陣、紅字提醒</a>
+<a class="ti game" href="#e35">火球廢女巫併進火球阿婆</a>
+<a class="ti tool" href="#e36">更正：「只知道掉幾盃」不一定是自動防守</a>
+</div></div>
+</div></section>
+<section class="mo" data-k="game tool"><h2>2026 年 9 月</h2><div class="rev">
+<div class="td" data-k="tool"><div class="dt">9/30</div><div class="tis">
+<a class="ti tool" href="#e31">文字換成兵種頭像</a>
+<a class="ti tool" href="#e32">取的名字就照用</a>
+<a class="ti tool" href="#e33">兩個「不做」</a>
+</div></div>
+<div class="td" data-k="tool"><div class="dt">9/29</div><div class="tis">
+<a class="ti tool" href="#e30">自動填寫開放全組</a>
+</div></div>
+<div class="td" data-k="game tool"><div class="dt">9/28</div><div class="tis">
+<a class="ti game" href="#e28">超球併進火球馬雲</a>
+<a class="ti tool" href="#e29">大轉折：防守紀錄開始自動化</a>
+</div></div>
+<div class="td" data-k="game"><div class="dt">9/27</div><div class="tis">
+<a class="ti game" href="#e27">陣型越來越分散</a>
+</div></div>
+<div class="td" data-k="tool"><div class="dt">9/26</div><div class="tis">
+<a class="ti tool" href="#e26">援軍欄位</a>
+</div></div>
+<div class="td" data-k="tool"><div class="dt">9/24</div><div class="tis">
+<a class="ti tool" href="#e25">表頭挑了四輪，數字對準正中</a>
+</div></div>
+<div class="td" data-k="tool"><div class="dt">9/23</div><div class="tis">
+<a class="ti tool" href="#e23">一天 21 個還原點：所有人的陣大改版</a>
+<a class="ti tool" href="#e24">出事：取回資料會搶走別人的帳號</a>
+</div></div>
+<div class="td" data-k="game tool"><div class="dt">9/22</div><div class="tis">
+<a class="ti game" href="#e21">鉛筆削弱實裝</a>
+<a class="ti tool" href="#e22">排序平手規則</a>
+</div></div>
+<div class="td" data-k="tool"><div class="dt">9/21</div><div class="tis">
+<a class="ti tool" href="#e20">兩條版面規矩</a>
+</div></div>
+<div class="td" data-k="tool"><div class="dt">9/19</div><div class="tis">
+<a class="ti tool" href="#e19">賽季卡誕生</a>
+</div></div>
+<div class="td" data-k="game"><div class="dt">9/16</div><div class="tis">
+<a class="ti game" href="#e18">官方公告鉛筆削弱</a>
+</div></div>
+<div class="td" data-k="game tool"><div class="dt">9/14</div><div class="tis">
+<a class="ti game" href="#e16">全組集中到 bb17</a>
+<a class="ti tool" href="#e17">八場填完自動帶總計、陣名開始合併</a>
+</div></div>
+<div class="td" data-k="tool"><div class="dt">9/11</div><div class="tis">
+<a class="ti tool" href="#e15">只上傳真的變過的帳號</a>
+</div></div>
+<div class="td" data-k="tool"><div class="dt">9/10</div><div class="tis">
+<a class="ti tool" href="#e14">全服使用率改成多數決</a>
+</div></div>
+<div class="td" data-k="tool"><div class="dt">9/9</div><div class="tis">
+<a class="ti tool" href="#e13">顏色照群組的真實資料畫</a>
+</div></div>
+<div class="td" data-k="tool"><div class="dt">9/8</div><div class="tis">
+<a class="ti tool" href="#e12">所有人的陣</a>
+</div></div>
+<div class="td" data-k="game tool"><div class="dt">9/7</div><div class="tis">
+<a class="ti game" href="#e10">第一次換季</a>
+<a class="ti tool" href="#e11">最後填寫清單：一個下午改了八次</a>
+</div></div>
+<div class="td" data-k="tool"><div class="dt">9/6</div><div class="tis">
+<a class="ti tool" href="#e9">換季前整備，群組正式叫 ETC</a>
+</div></div>
+<div class="td" data-k="tool"><div class="dt">9/5</div><div class="tis">
+<a class="ti tool" href="#e8">日等級特效：敲破玻璃、放火箭</a>
+</div></div>
+<div class="td" data-k="tool"><div class="dt">9/4</div><div class="tis">
+<a class="ti tool" href="#e7">手機填寫大改：特效、數字鍵、取回資料</a>
+</div></div>
+<div class="td" data-k="tool"><div class="dt">9/3</div><div class="tis">
+<a class="ti tool" href="#e6">多群組，還有「修 bug 不跳快報」</a>
+</div></div>
+<div class="td" data-k="tool"><div class="dt">9/2</div><div class="tis">
+<a class="ti tool" href="#e4">第一個還原點</a>
+<a class="ti tool" href="#e5">第一個外部群組</a>
+</div></div>
+</div></section>
+<section class="mo" data-k="game tool"><h2>2026 年 8 月</h2><div class="rev">
+<div class="td" data-k="game"><div class="dt">8/31</div><div class="tis">
+<a class="ti game" href="#e3">改版：移除 Bug煎餅</a>
+</div></div>
+<div class="td" data-k="tool"><div class="dt">8/27</div><div class="tis">
+<a class="ti tool" href="#e2">工具上線</a>
+</div></div>
+<div class="td" data-k="game"><div class="dt">8/10</div><div class="tis">
+<a class="ti game" href="#e1">賽季開始（8/10–9/6）</a>
+</div></div>
+</div></section>
+</div>
+<p style="margin:40px 0 0;font-size:12px;line-height:1.6;color:var(--sub)">This material is unofficial and is not endorsed by Supercell. For more information see Supercell's Fan Content Policy: www.supercell.com/fan-content-policy</p></div>
+<script>
+(function(){
+var K='journal_ui',$=function(i){return document.getElementById(i)};
+function save(){try{localStorage.setItem(K,JSON.stringify({v:$('vTl').checked?'vTl':'vFull',o:$('oOld').checked?'oOld':'oNew',g:$('fGame').checked}))}catch(e){}}
+try{var s=JSON.parse(localStorage.getItem(K)||'{}');if(s.v&&$(s.v))$(s.v).checked=true;if(s.o&&$(s.o))$(s.o).checked=true;$('fGame').checked=!!s.g}catch(e){}
+document.querySelectorAll('.vh').forEach(function(i){i.addEventListener('change',save)});
+document.querySelectorAll('.ti').forEach(function(a){a.addEventListener('click',function(ev){
+ev.preventDefault();$('vFull').checked=true;save();var id=a.getAttribute('href').slice(1);
+if(location.hash==='#'+id)$(id).scrollIntoView();else location.hash=id})});
+})();
+</script>
+</body></html>
